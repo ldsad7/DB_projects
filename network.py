@@ -1,6 +1,7 @@
 import sqlite3
 import json
 
+
 class DataBase():
     def __init__(self):
         con = sqlite3.connect("network.db")
@@ -18,32 +19,32 @@ class DataBase():
     def load(self, users):
         for i in range(len(users['id'])):
             """
-            print(f"INSERT OR IGNORE INTO Users VALUES " + 
-            f"({users['id'][i]}, '{users['first_name'][i]}', '{users['last_name'][i]}', '{users['bdate'][i]}', " + 
-            f"{users['sex'][i]}, '{users['city'][i]}', '{users['country'][i]}', {users['followers_count'][i]}, " + 
-            f"{users['relation'][i]}, {users['political'][i]}, {users['people_main'][i]}, {users['life_main'][i]}, " + 
+            print(f"INSERT OR IGNORE INTO Users VALUES " +
+            f"({users['id'][i]}, '{users['first_name'][i]}', '{users['last_name'][i]}', '{users['bdate'][i]}', " +
+            f"{users['sex'][i]}, '{users['city'][i]}', '{users['country'][i]}', {users['followers_count'][i]}, " +
+            f"{users['relation'][i]}, {users['political'][i]}, {users['people_main'][i]}, {users['life_main'][i]}, " +
             f"{users['smoking'][i]}, {users['alcohol'][i]})")
             """
-            self.cur.execute(f"INSERT OR IGNORE INTO Users VALUES " + 
-            f"({users['id'][i]}, '{users['first_name'][i]}', '{users['last_name'][i]}', '{users['bdate'][i]}', " + 
-            f"{users['sex'][i]}, '{users['city'][i]}', '{users['country'][i]}', {users['followers_count'][i]}, " + 
-            f"{users['relation'][i]}, {users['political'][i]}, {users['people_main'][i]}, {users['life_main'][i]}, " + 
-            f"{users['smoking'][i]}, {users['alcohol'][i]})")
+            self.cur.execute(f"INSERT OR IGNORE INTO Users VALUES " +
+                             f"({users['id'][i]}, '{users['first_name'][i]}', '{users['last_name'][i]}', '{users['bdate'][i]}', " +
+                             f"{users['sex'][i]}, '{users['city'][i]}', '{users['country'][i]}', {users['followers_count'][i]}, " +
+                             f"{users['relation'][i]}, {users['political'][i]}, {users['people_main'][i]}, {users['life_main'][i]}, " +
+                             f"{users['smoking'][i]}, {users['alcohol'][i]})")
         self.cur.execute(f"SELECT * FROM Users")
         self.nrows_users = len(self.cur.fetchall())
         count = 0
-        for i, user in enumerate(users['friends'][:50]): # слишком долго работает, поэтому ограничиваем
+        for i, user in enumerate(users['friends'][:50]):  # слишком долго работает, поэтому ограничиваем
             for j, friend in enumerate(user):
                 if users['id'][i] < friend:
-                    # self.cur.execute(f"SELECT id_friendship FROM Friends WHERE id_first_user = {users['id'][i]} AND id_second_user = {friend}")
-                    # if len(self.cur.fetchall()) == 0:
-                    # print(f"INSERT OR IGNORE INTO Friends VALUES ({count}, {users['id'][i]}, {friend})")
+                    #  self.cur.execute(f"SELECT id_friendship FROM Friends WHERE id_first_user = {users['id'][i]} AND id_second_user = {friend}")
+                    #  if len(self.cur.fetchall()) == 0:
+                    #  print(f"INSERT OR IGNORE INTO Friends VALUES ({count}, {users['id'][i]}, {friend})")
                     self.cur.execute(f"INSERT OR IGNORE INTO Friends VALUES ({count}, {users['id'][i]}, {friend})")
                     count += 1
                 else:
-                    # self.cur.execute(f"SELECT id_friendship FROM Friends WHERE id_first_user = {friend} AND id_second_user = {users['id'][i]}")
-                    # if len(self.cur.fetchall()) == 0:
-                    # print(f"INSERT OR IGNORE INTO Friends VALUES ({count}, {friend}, {users['id'][i]})")
+                    #  self.cur.execute(f"SELECT id_friendship FROM Friends WHERE id_first_user = {friend} AND id_second_user = {users['id'][i]}")
+                    #  if len(self.cur.fetchall()) == 0:
+                    #  print(f"INSERT OR IGNORE INTO Friends VALUES ({count}, {friend}, {users['id'][i]})")
                     self.cur.execute(f"INSERT OR IGNORE INTO Friends VALUES ({count}, {friend}, {users['id'][i]})")
                     count += 1
         self.cur.execute(f"SELECT * FROM Friends")
@@ -123,6 +124,7 @@ class DataBase():
         else:
             raise ValueError("There is no such table")
 
+
 def dialog(db):
     print('----------------------------------------')
     print("What do you want to do?")
@@ -166,6 +168,7 @@ def dialog(db):
         return
     dialog(db)
 
+
 def main():
     db = DataBase()
     with open('data.json', 'r', encoding='utf-8') as f:
@@ -202,6 +205,7 @@ def main():
     print(db.size('Friends'))
     """
     dialog(db)
+
 
 if __name__ == "__main__":
     main()
